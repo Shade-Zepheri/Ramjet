@@ -16,7 +16,7 @@ enum _CFLogLevel {
 #define RT_LOG_FORMAT(color) CFSTR("\e[1;3" #color "m[%s] \e[m\e[0;3" #color "m%s:%d\e[m \e[0;30;4" #color "m%s:\e[m %@")
 
 #ifdef __DEBUG__
-    #define RT_LOG_INTERNAL(color, level, type, ...) CFLog(level, HB_LOG_FORMAT(color), THEOS_INSTANCE_NAME, __BASE_FILE__, __LINE__, type, (__bridge CFStringRef)[NSString stringWithFormat:__VA_ARGS__]);
+    #define RT_LOG_INTERNAL(color, level, type, ...) CFLog(level, RT_LOG_FORMAT(color), "Ramjet", __BASE_FILE__, __LINE__, type, (__bridge CFStringRef)[NSString stringWithFormat:__VA_ARGS__]);
 #else
     #define RT_LOG_INTERNAL(color, level, type, ...)
 #endif
