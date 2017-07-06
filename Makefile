@@ -9,9 +9,9 @@ CFLAGS = -fobjc-arc -flto=thin
 
 include $(THEOS)/makefiles/common.mk
 
-LIBRARY_NAME = Ramjet
-Ramjet_FILES = Ramjet.m
-Ramjet_FRAMEWORKS = Foundation
-Ramjet_EXTRA_FRAMEWORKS = CydiaSubstrate
+LIBRARY_NAME = libramjet
+libramjet_FILES = Ramjet.m
+libramjet_FRAMEWORKS = Foundation
+libramjet_EXTRA_FRAMEWORKS = CydiaSubstrate
 
 include $(THEOS_MAKE_PATH)/library.mk
