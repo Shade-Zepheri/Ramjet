@@ -6,6 +6,7 @@
 
 #import "Ramjet.h"
 #import "Ramjet-Private.h"
+#import "Logging.h"
 
 static int maxRequestedTaskLimit;
 static char maxRequestor[MAX_REQUEST_NAME];
@@ -28,12 +29,12 @@ int updateTaskLimit(int taskLimitMB, char* requester, int pid) {
 	if (memoryStatus) {
 			response = memoryStatus(MEMORYSTATUS_CMD_SET_JETSAM_TASK_LIMIT, pid, taskLimitMB, NULL, 0);
 			if (response != 0) {
-					HBLogError(@"Error in setting taskLimit to %d by \"%s\"", taskLimitMB, requester);
+					RTLogError(@"Error in setting taskLimit to %d by \"%s\"", taskLimitMB, requester);
 			} else {
 					HBLogInfo(@"Sucessfully set taskLimit to %d b \"%s\"", taskLimitMB, requester);
 			}
 	} else {
-			HBLogError(@"Error in creating dlysm_memoryStatus");
+			RTLogError(@"Error in creating dlysm_memoryStatus");
 	}
 
 	return response;
@@ -41,13 +42,14 @@ int updateTaskLimit(int taskLimitMB, char* requester, int pid) {
 
 extern int ramjet_updateTaskLimitForPID(int taskLimitMB, char* requester, int pid) {
 		if (taskLimitMB < 1) {
-				HBLogError(@"jetslammed: high watermark requested below 1 (%d) ", taskLimitMB);
+				RTLogError(@"Requested Tasklimit is bellow 1 (%d) ", taskLimitMB);
 				return -3;
 		} else if (taskLimitMB > 1024) {
-				HBLogError(@"jetslammed: high watermark is in MB. %d too high", taskLimitMB);
+				RTLogError(@"Tasklimit is in MB. %d too high", taskLimitMB);
 				return -2;
 		} else if (taskLimitMB < maxRequestedWatermark) {
 				HBlogWarn(@"jetslammed: not updating high watermark to %d, previous requestor %s already updated to %d mb", taskLimitMB, maxRequestor, maxRequestedWatermark);
+				RTLogWarn(@"Not updating Tasklimit to %d, previous requestor %s already updated to %d mb", taskLimitMB, maxRequestor, maxRequestedTaskLimit);
 		} else {
 				if (updateTaskLimit(taskLimitMB, requester, pid) == 0) {
 						strncpy(maxRequestor, requester, MAX_REQUEST_NAME-1);
