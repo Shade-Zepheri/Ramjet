@@ -3,7 +3,7 @@
 
 #include <objc/objc.h>
 
-int ramjet_updateTaskLimit(int taskLimitMB, char* requester);
-int ramjet_updateTaskLimitForPID(int taskLimitMB, char* requester, int pid);
+extern int ramjet_updateTaskLimit(int taskLimitMB, char* requester);
+extern int ramjet_updateTaskLimitForPID(int taskLimitMB, char* requester, int pid);
 
 #endif
