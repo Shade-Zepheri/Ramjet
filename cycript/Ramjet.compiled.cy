@@ -1,0 +1,1 @@
+var intFunc,handle,updateTaskLimit,updateTaskLimitForPID;intFunc=new Type("v").functionWith(int);handle=dlopen("/usr/lib/Ramjet.dylib",RTLD_NOW);updateTaskLimit=intFunc(dlsym(handle,"ramjet_updateTaskLimit"));updateTaskLimitForPID=intFunc(dlsym(handle,"ramjet_updateTaskLimitForPID"));
