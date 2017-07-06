@@ -23,7 +23,8 @@ int updateTaskLimit(int taskLimitMB, char* requester, int pid) {
 		int response = -1;
 
 		dlysm_memoryStatus memoryStatus;
-		memoryStatus = (dlysm_memoryStatus)MSFindSymbol(NULL, "memorystatus_control");
+		void *handle = dlopen(NULL, 0);
+		memoryStatus = (dlysm_memoryStatus)dlsym(handle, "memorystatus_control");
 		if (memoryStatus) {
 				response = memoryStatus(MEMORYSTATUS_CMD_SET_JETSAM_TASK_LIMIT, pid, taskLimitMB, NULL, 0);
 				if (response != 0) {
