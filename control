@@ -1,0 +1,10 @@
+Package: ramjet
+Name: Ramjet
+Depends: mobilesubstrate
+Version: 0.1
+Architecture: iphoneos-arm
+Description: Increase memory limits of processes
+Maintainer: Shade Zepheri <ziroalpha@gmail.com>
+Author: Shade Zepheri <ziroalpha@gmail.com>
+Section: System
+Tag: role::developer
