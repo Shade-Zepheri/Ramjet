@@ -20,22 +20,22 @@ extern int ramjet_updateTaskLimit(int taskLimitMB, char* requester) {
 }
 
 int updateTaskLimit(int taskLimitMB, char* requester, int pid) {
-	int response = -1;
+		int response = -1;
 
-	dlysm_memoryStatus memoryStatus;
-	memoryStatus = (dlysm_memoryStatus)MSFindSymbol(NULL, "memorystatus_control");
-	if (memoryStatus) {
-			response = memoryStatus(MEMORYSTATUS_CMD_SET_JETSAM_TASK_LIMIT, pid, taskLimitMB, NULL, 0);
-			if (response != 0) {
-					RTLogError(@"Error in setting taskLimit to %d by \"%s\"", taskLimitMB, requester);
-			} else {
-					RTLogInfo(@"Sucessfully set taskLimit to %d b \"%s\"", taskLimitMB, requester);
-			}
-	} else {
-			RTLogError(@"Error in creating dlysm_memoryStatus");
-	}
+		dlysm_memoryStatus memoryStatus;
+		memoryStatus = (dlysm_memoryStatus)MSFindSymbol(NULL, "memorystatus_control");
+		if (memoryStatus) {
+				response = memoryStatus(MEMORYSTATUS_CMD_SET_JETSAM_TASK_LIMIT, pid, taskLimitMB, NULL, 0);
+				if (response != 0) {
+						RTLogError(@"Error in setting taskLimit to %d by \"%s\"", taskLimitMB, requester);
+				} else {
+						RTLogInfo(@"Sucessfully set taskLimit to %d b \"%s\"", taskLimitMB, requester);
+				}
+		} else {
+				RTLogError(@"Error in creating dlysm_memoryStatus");
+		}
 
-	return response;
+		return response;
 }
 
 extern int ramjet_updateTaskLimitForPID(int taskLimitMB, char* requester, int pid) {
