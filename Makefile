@@ -12,6 +12,5 @@ include $(THEOS)/makefiles/common.mk
 LIBRARY_NAME = libramjet
 libramjet_FILES = Ramjet.m
 libramjet_FRAMEWORKS = Foundation
-libramjet_EXTRA_FRAMEWORKS = CydiaSubstrate
 
 include $(THEOS_MAKE_PATH)/library.mk
