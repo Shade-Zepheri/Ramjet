@@ -1,0 +1,6 @@
+#!/bin/sh
+
+chgrp wheel /Library/LaunchDaemons/ramjet.plist
+chown root /Library/LaunchDaemons/ramjet.plist
+chown root:wheel /usr/libexec/RamjetDaemon
+launchctl load -w /Library/LaunchDaemons/ramjet.plist
