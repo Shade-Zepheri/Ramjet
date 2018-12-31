@@ -1,3 +1,4 @@
+#import <Foundation/Foundation.h>
 #include <signal.h>
 
 #define MAX_REQUEST_NAME 1024
@@ -10,12 +11,12 @@
 #define kRamjetDaemon "ramjetdaemon"
 
 LMConnection connection = {
-		MACH_PORT_NULL,
-		kRamjetDaemon
+	MACH_PORT_NULL,
+	kRamjetDaemon
 };
 
 typedef struct {
-		int memorySize;
-		char *requester;
-		pid_t pid;
+	int memorySize;
+	char *requester;
+	pid_t pid;
 } RamjetInfo;
