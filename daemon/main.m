@@ -18,9 +18,9 @@ static int updateTaskLimit(uint32_t taskLimitMB, char *requester, pid_t pid) {
 	if (memoryStatus) {
 		response = memoryStatus(MEMORYSTATUS_CMD_SET_JETSAM_HIGH_WATER_MARK, pid, taskLimitMB, NULL, 0);
 		if (response != 0) {
-			RTLogError(@"Error in setting taskLimit to %d by \"%s\" error: %s", taskLimitMB, requester, strerror(errno));
+			RTLogError(@"Error in setting taskLimit to %u by \"%s\" error: %s", taskLimitMB, requester, strerror(errno));
 		} else {
-			RTLogInfo(@"Sucessfully set taskLimit to %d by \"%s\"", taskLimitMB, requester);
+			RTLogInfo(@"Successfully set taskLimit to %u by \"%s\"", taskLimitMB, requester);
 		}
 	} else {
 			RTLogError(@"Error in creating dlysm_memoryStatus");
@@ -38,9 +38,9 @@ static void receivedNotifcation(CFMachPortRef port, void *bytes, CFIndex size, v
 	}
 
 	// Retrieve and unarchive data
-	CFDataRef data = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, (const UInt8 *)LMMessageGetData(request), LMMessageGetDataLength(request), kCFAllocatorNull);
+	NSData *data = (__bridge NSData *)CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, (const UInt8 *)LMMessageGetData(request), LMMessageGetDataLength(request), kCFAllocatorNull);
 	RamjetInfo requestInfo;
-	[(__bridge NSData *)data getBytes:&requestInfo length:sizeof(requestInfo)];
+	[data getBytes:&requestInfo length:sizeof(requestInfo)];
 
 	updateTaskLimit(requestInfo.memorySize, requestInfo.requester, requestInfo.pid);
 	LMResponseBufferFree(bytes);

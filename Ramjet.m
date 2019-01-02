@@ -19,8 +19,8 @@ static kern_return_t sendInfo(uint32_t taskLimitMB, char *requester, pid_t pid) 
 	dispatch_async(queue, ^{
 		RamjetInfo info;
 		info.memorySize = taskLimitMB;
-		info.requester = requester;
 		info.pid = pid;
+		strncpy(info.requester, requester, MAX_REQUEST_NAME-1);
 
 		NSData *input = [NSData dataWithBytes:&info length:sizeof(info)];
 		result = LMConnectionSendOneWayData(&connection, 0, (__bridge CFDataRef)input);

@@ -13,6 +13,6 @@ static LMConnection connection = {
 
 typedef struct {
 	uint32_t memorySize;
-	char *requester;
+	char requester[MAX_REQUEST_NAME];
 	pid_t pid;
 } RamjetInfo;
