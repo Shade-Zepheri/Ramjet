@@ -7,26 +7,33 @@
 static int maxRequestedTaskLimit;
 static char maxRequester[MAX_REQUEST_NAME];
 
-extern int ramjet_updateTaskLimit(int taskLimitMB, char *requester) {
+extern int ramjet_updateTaskLimit(uint32_t taskLimitMB, char *requester) {
 	return ramjet_updateTaskLimitForPID(taskLimitMB, requester, getpid());
 }
 
-static void sendInfo(int taskLimitMB, char *requester, pid_t pid) {
-	RamjetInfo info;
-	info.memorySize = taskLimitMB;
-	info.requester = requester;
-	info.pid = pid;
+static kern_return_t sendInfo(uint32_t taskLimitMB, char *requester, pid_t pid) {
+	__block kern_return_t result;
 
-	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-		NSDictionary *data = @{@"Request": [NSValue valueWithBytes:&info objCType:@encode(RamjetInfo)]};
-		LMConnectionSendOneWayData(&connection, 0, (__bridge CFDataRef)LMDataForPropertyList(data));
+	dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+	dispatch_queue_t queue = dispatch_queue_create([NSString stringWithFormat:@"com.shade.ramjet%f", [NSDate date].timeIntervalSince1970].UTF8String, DISPATCH_QUEUE_SERIAL);
+	dispatch_async(queue, ^{
+		RamjetInfo info;
+		info.memorySize = taskLimitMB;
+		info.requester = requester;
+		info.pid = pid;
+
+		NSData *input = [NSData dataWithBytes:&info length:sizeof(info)];
+		result = LMConnectionSendOneWayData(&connection, 0, (__bridge CFDataRef)input);
+
+		dispatch_semaphore_signal(semaphore);
 	});
 
-	strncpy(maxRequester, requester, MAX_REQUEST_NAME-1);
-	maxRequestedTaskLimit = taskLimitMB;
+	dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC));
+
+	return result;
 }
 
-extern int ramjet_updateTaskLimitForPID(int taskLimitMB, char *requester, pid_t pid) {
+extern int ramjet_updateTaskLimitForPID(uint32_t taskLimitMB, char *requester, pid_t pid) {
 	if (taskLimitMB < 1) {
 		RTLogError(@"Requested Tasklimit is bellow 1 (%d) ", taskLimitMB);
 		return -3;
@@ -36,7 +43,13 @@ extern int ramjet_updateTaskLimitForPID(int taskLimitMB, char *requester, pid_t 
 	} else if (taskLimitMB < maxRequestedTaskLimit) {
 		RTLogWarn(@"Not updating Tasklimit to %d, previous requester %s already set it to %d mb", taskLimitMB, maxRequester, maxRequestedTaskLimit);
 	} else {
-		sendInfo(taskLimitMB, requester, pid);
+		if (sendInfo(taskLimitMB, requester, pid) != KERN_SUCCESS) {
+			RTLogError(@"Couldn't communicate with daemon");
+			return -1;
+		}
+
+		strncpy(maxRequester, requester, MAX_REQUEST_NAME-1);
+		maxRequestedTaskLimit = taskLimitMB;
 	}
 
 	return 0;

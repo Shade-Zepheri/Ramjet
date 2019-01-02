@@ -3,20 +3,16 @@
 
 #define MAX_REQUEST_NAME 1024
 
-//Add daemon logic if needed
-#define LIGHTMESSAGING_TIMEOUT 500
 #define LIGHTMESSAGING_USE_ROCKETBOOTSTRAP 0
 #import <LightMessaging/LightMessaging.h>
 
-#define kRamjetDaemon "ramjetdaemon"
-
-LMConnection connection = {
+static LMConnection connection = {
 	MACH_PORT_NULL,
-	kRamjetDaemon
+	"com.shade.ramjetd"
 };
 
 typedef struct {
-	int memorySize;
+	uint32_t memorySize;
 	char *requester;
 	pid_t pid;
 } RamjetInfo;

@@ -1,2 +1,4 @@
 #!/bin/bash
-launchctl unload -w /Library/LaunchDaemons/ramjet.plist
+set -e
+
+launchctl unload -w /Library/LaunchDaemons/com.shade.ramjetd.plist

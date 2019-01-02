@@ -11,22 +11,18 @@ include $(THEOS)/makefiles/common.mk
 
 LIBRARY_NAME = libramjet
 libramjet_FILES = Ramjet.m
-libramjet_FRAMEWORKS = Foundation
+libramjet_PUBLIC_HEADERS = Ramjet.h
 
-SUBPROJECTS = ramjetdaemon
+SUBPROJECTS = daemon
 
 include $(THEOS_MAKE_PATH)/library.mk
 include $(THEOS_MAKE_PATH)/aggregate.mk
 
 after-libramjet-stage::
-		@# create directories
-		$(ECHO_NOTHING)mkdir -p $(THEOS_STAGING_DIR)/usr/include  $(THEOS_STAGING_DIR)/DEBIAN $(THEOS_STAGING_DIR)/Library/LaunchDaemons$(ECHO_END)
+	@# create directories
+	$(ECHO_NOTHING)mkdir -p $(THEOS_STAGING_DIR)/DEBIAN $(THEOS_STAGING_DIR)/Library/LaunchDaemons$(ECHO_END)
 
-		@# copy header tp incude
-		$(ECHO_NOTHING)cp Ramjet.h $(THEOS_STAGING_DIR)/usr/include$(ECHO_END)
+	@# {pre,post}inst -> /DEBIAN/
+	$(ECHO_NOTHING)cp postinst prerm $(THEOS_STAGING_DIR)/DEBIAN$(ECHO_END)
 
-		@# copy scripts
-		$(ECHO_NOTHING)cp postinst prerm $(THEOS_STAGING_DIR)/DEBIAN$(ECHO_END)
-
-		@# copy daemon plist
-		$(ECHO_NOTHING)cp ramjet.plist $(THEOS_STAGING_DIR)/Library/LaunchDaemons$(ECHO_END)
+	$(ECHO_NOTHING)cp daemon/com.shade.ramjetd.plist $(THEOS_STAGING_DIR)/Library/LaunchDaemons$(ECHO_END)

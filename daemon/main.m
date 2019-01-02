@@ -9,7 +9,7 @@
 
 typedef int (*dlysm_memoryStatus)(uint32_t command, pid_t pid, uint32_t flags, void *buffer, size_t buffersize);
 
-static int updateTaskLimit(int taskLimitMB, char *requester, pid_t pid) {
+static int updateTaskLimit(uint32_t taskLimitMB, char *requester, pid_t pid) {
 	int response = -1;
 
 	dlysm_memoryStatus memoryStatus;
@@ -29,31 +29,30 @@ static int updateTaskLimit(int taskLimitMB, char *requester, pid_t pid) {
 	return response;
 }
 
-static void receivedNotifcation(CFMachPortRef port, LMMessage *request, CFIndex size, void *info) {
-	if ((size_t)size < sizeof(LMMessage)) {
+static void receivedNotifcation(CFMachPortRef port, void *bytes, CFIndex size, void *info) {
+	LMMessage *request = bytes;
+	if (!LMDataWithSizeIsValidMessage(bytes, size)) {
 		RTLogError(@"received a bad message? size = %li", size);
+		LMResponseBufferFree(bytes);
 		return;
 	}
 
-	//convert to NSDictionary
-	const void *rawData = LMMessageGetData(request);
-	size_t length = LMMessageGetDataLength(request);
-	CFDataRef data = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, (const UInt8 *)rawData, length, kCFAllocatorNull);
-	NSDictionary *userInfo = LMPropertyListForData((__bridge NSData *)data);
-
-	NSValue *infoStruct = userInfo[@"Request"];
+	// Retrieve and unarchive data
+	CFDataRef data = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, (const UInt8 *)LMMessageGetData(request), LMMessageGetDataLength(request), kCFAllocatorNull);
 	RamjetInfo requestInfo;
-	[infoStruct getValue:&requestInfo];
+	[(__bridge NSData *)data getBytes:&requestInfo length:sizeof(requestInfo)];
 
 	updateTaskLimit(requestInfo.memorySize, requestInfo.requester, requestInfo.pid);
+	LMResponseBufferFree(bytes);
 }
 
-int main(int argc, char **argv, char **envp) {
-	kern_return_t error = LMStartService(connection.serverName, CFRunLoopGetCurrent(), (CFMachPortCallBack)receivedNotifcation);
+int main() {
+	kern_return_t result = LMCheckInService(connection.serverName, CFRunLoopGetCurrent(), receivedNotifcation, NULL);
 
-	if (error) {
-		RTLogError(@"Failed to start daemon: error %i", error);
+	if (result != KERN_SUCCESS) {
+		RTLogError(@"Failed to start daemon: error %i", result);
 	}
 
+	CFRunLoopRun();
 	return 0;
 }

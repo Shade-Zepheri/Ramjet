@@ -2,15 +2,18 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>ProgramArguments</key>
-	<array>
-		<string>/usr/libexec/RamjetDaemon</string>
-	</array>
-	<key>OnDemand</key>
+	<key>Label</key>
+	<string>com.shade.ramjetd</string>
+	<key>Program</key>
+	<string>/usr/libexec/ramjetd</string>
+	<key>ExecuteAllowed</key>
 	<true/>
+	<key>MachServices</key>
+	<dict>
+		<key>com.shade.ramjetd</key>
+		<true/>
+	</dict>
 	<key>UserName</key>
 	<string>mobile</string>
-	<key>Label</key>
-	<string>ramjet</string>
 </dict>
 </plist>
