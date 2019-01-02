@@ -11,8 +11,8 @@ extern int ramjet_updateTaskLimit(uint32_t taskLimitMB, char *requester) {
 	return ramjet_updateTaskLimitForPID(taskLimitMB, requester, getpid());
 }
 
-static kern_return_t sendInfo(uint32_t taskLimitMB, char *requester, pid_t pid) {
-	__block kern_return_t result;
+static BOOL sendInfo(uint32_t taskLimitMB, char *requester, pid_t pid) {
+	__block BOOL result;
 
 	dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 	dispatch_queue_t queue = dispatch_queue_create([NSString stringWithFormat:@"com.shade.ramjet%f", [NSDate date].timeIntervalSince1970].UTF8String, DISPATCH_QUEUE_SERIAL);
@@ -43,7 +43,7 @@ extern int ramjet_updateTaskLimitForPID(uint32_t taskLimitMB, char *requester, p
 	} else if (taskLimitMB < maxRequestedTaskLimit) {
 		RTLogWarn(@"Not updating Tasklimit to %d, previous requester %s already set it to %d mb", taskLimitMB, maxRequester, maxRequestedTaskLimit);
 	} else {
-		if (sendInfo(taskLimitMB, requester, pid) != KERN_SUCCESS) {
+		if (!sendInfo(taskLimitMB, requester, pid)) {
 			RTLogError(@"Couldn't communicate with daemon");
 			return -1;
 		}
