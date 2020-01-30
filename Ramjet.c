@@ -36,8 +36,7 @@ static bool sendInfo(uint32_t taskLimitMB, char *requester, pid_t pid) {
 
 extern kern_return_t ramjet_updateTaskLimitForPID(uint32_t taskLimitMB, char *requester, pid_t pid) {
 	if (taskLimitMB < 1) {
-		os_log_error(OS_LOG_DEFAULT, "Requested Tasklimit is bellow 1 (%u) ", taskLimitMB);
-		return KERN_INVALID_VALUE;
+		os_log_error(OS_LOG_DEFAULT, "Requested Tasklimit is below 1 (%u) ", taskLimitMB);
 	} else if (taskLimitMB > 1024) {
 		os_log_error(OS_LOG_DEFAULT, "Tasklimit is in MB. %u is too high", taskLimitMB);
 		return KERN_INVALID_VALUE;
