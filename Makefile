@@ -1,17 +1,13 @@
-export TARGET = iphone:11.2:9.0
-
-ifeq ($(IPAD),1)
-export THEOS_DEVICE_IP=192.168.254.4
-export THEOS_DEVICE_PORT=22
-endif
+export TARGET = iphone:latest:10.0
+export ARCHS = armv7 arm64 arm64e
 
 export ADDITIONAL_CFLAGS = -DTHEOS_LEAN_AND_MEAN -fobjc-arc
 
 include $(THEOS)/makefiles/common.mk
 
 LIBRARY_NAME = libramjet
-libramjet_FILES = Ramjet.m
-libramjet_PUBLIC_HEADERS = Ramjet.h
+$(LIBRARY_NAME)_FILES = Ramjet.c
+$(LIBRARY_NAME)_PUBLIC_HEADERS = Ramjet.h
 
 SUBPROJECTS = daemon
 

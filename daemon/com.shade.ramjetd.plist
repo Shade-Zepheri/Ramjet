@@ -4,10 +4,10 @@
 <dict>
 	<key>Label</key>
 	<string>com.shade.ramjetd</string>
-	<key>Program</key>
-	<string>/usr/libexec/ramjetd</string>
-	<key>ExecuteAllowed</key>
-	<true/>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/usr/bin/ramjetd</string>
+	</array>
 	<key>MachServices</key>
 	<dict>
 		<key>com.shade.ramjetd</key>
@@ -15,5 +15,11 @@
 	</dict>
 	<key>UserName</key>
 	<string>mobile</string>
+	<key>ExecuteAllowed</key>
+	<true/>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>KeepAlive</key>
+	<true/>
 </dict>
 </plist>

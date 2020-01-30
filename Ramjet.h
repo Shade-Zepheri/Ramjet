@@ -1,9 +1,11 @@
 #ifndef RAMJET_H
 #define RAMJET_H
 
-#include <objc/objc.h>
+#include <stdint.h>
+#include <sys/proc.h>
+#include <mach/mach.h>
 
-extern int ramjet_updateTaskLimit(uint32_t taskLimitMB, char* requester);
-extern int ramjet_updateTaskLimitForPID(uint32_t taskLimitMB, char* requester, pid_t pid);
+extern kern_return_t ramjet_updateTaskLimit(uint32_t taskLimitMB, char *requester);
+extern kern_return_t ramjet_updateTaskLimitForPID(uint32_t taskLimitMB, char *requester, pid_t pid);
 
 #endif
