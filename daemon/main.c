@@ -9,14 +9,14 @@
 #define MEMORYSTATUS_CMD_SET_JETSAM_HIGH_WATER_MARK   5    /* Set active memory limit = inactive memory limit, both non-fatal	*/
 #define MEMORYSTATUS_CMD_SET_JETSAM_TASK_LIMIT	      6    /* Set active memory limit = inactive memory limit, both fatal	*/
 
-typedef int (*dlysm_memoryStatus)(uint32_t command, pid_t pid, uint32_t flags, void *buffer, size_t buffersize);
+typedef int (*dlsym_memoryStatus)(uint32_t command, pid_t pid, uint32_t flags, void *buffer, size_t buffersize);
 
 static int updateTaskLimit(uint32_t taskLimitMB, char *requester, pid_t pid) {
 	int response = -1;
 
-	dlysm_memoryStatus memoryStatus;
+	dlsym_memoryStatus memoryStatus;
 	void *handle = dlopen(NULL, 0);
-	memoryStatus = (dlysm_memoryStatus)dlsym(handle, "memorystatus_control");
+	memoryStatus = (dlsym_memoryStatus)dlsym(handle, "memorystatus_control");
 	if (memoryStatus) {
 		response = memoryStatus(MEMORYSTATUS_CMD_SET_JETSAM_HIGH_WATER_MARK, pid, taskLimitMB, NULL, 0);
 		if (response != 0) {
@@ -25,7 +25,7 @@ static int updateTaskLimit(uint32_t taskLimitMB, char *requester, pid_t pid) {
 			os_log_info(OS_LOG_DEFAULT, "Successfully set taskLimit to %u by \"%s\"", taskLimitMB, requester);
 		}
 	} else {
-		os_log_error(OS_LOG_DEFAULT, "Error in creating dlysm_memoryStatus");
+		os_log_error(OS_LOG_DEFAULT, "Error in creating dlsym_memoryStatus");
 	}
 
 	return response;
