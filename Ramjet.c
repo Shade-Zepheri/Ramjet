@@ -14,7 +14,7 @@ static bool sendInfo(uint32_t taskLimitMB, char *requester, pid_t pid) {
 	// Create connection
 	xpc_connection_t connection =  xpc_connection_create_mach_service("com.shade.ramjetd", NULL, 0);
 	if (connection == NULL) {
-		// Error
+		// Couldnt create connection
 		os_log_error(OS_LOG_DEFAULT, "Failed to create xpc connection");
 		return false;
 	}
@@ -37,18 +37,20 @@ static bool sendInfo(uint32_t taskLimitMB, char *requester, pid_t pid) {
 extern kern_return_t ramjet_updateTaskLimitForPID(uint32_t taskLimitMB, char *requester, pid_t pid) {
 	if (taskLimitMB < 1) {
 		os_log_error(OS_LOG_DEFAULT, "Requested Tasklimit is bellow 1 (%u) ", taskLimitMB);
-		return KERN_INVALID_ARGUMENT;
+		return KERN_INVALID_VALUE;
 	} else if (taskLimitMB > 1024) {
 		os_log_error(OS_LOG_DEFAULT, "Tasklimit is in MB. %u is too high", taskLimitMB);
-		return KERN_INVALID_ARGUMENT;
+		return KERN_INVALID_VALUE;
 	} else if (taskLimitMB < maxRequestedTaskLimit) {
 		os_log_info(OS_LOG_DEFAULT, "Not updating Tasklimit to %u, previous requester %s already set it to %u mb", taskLimitMB, maxRequester, maxRequestedTaskLimit);
 	} else {
 		if (!sendInfo(taskLimitMB, requester, pid)) {
-			// os_log_error(OS_LOG_DEFAULT, "Couldn't communicate with daemon");
-			return -1;
+			// Couldnt send info
+			os_log_error(OS_LOG_DEFAULT, "Couldn't communicate with daemon");
+			return KERN_FAILURE;
 		}
 
+		// Update maxes
 		maxRequester = requester;
 		maxRequestedTaskLimit = taskLimitMB;
 	}

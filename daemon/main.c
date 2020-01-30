@@ -1,8 +1,6 @@
 #include "Ramjet-Private.h"
 #include <dlfcn.h>
 #include <errno.h>
-#include <mach/mach.h>
-#include <memory.h>
 #include <os/log.h>
 #include <xpc/xpc.h>
 
