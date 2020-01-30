@@ -1,4 +1,4 @@
-Package: ramjet
+Package: com.shade.ramjet
 Name: Ramjet
 Depends: mobilesubstrate
 Version: 0.1
