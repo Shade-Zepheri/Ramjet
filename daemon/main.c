@@ -1,30 +1,17 @@
 #include "Ramjet-Private.h"
-#include <dlfcn.h>
 #include <errno.h>
+#include <sys/kern_memorystatus.h>
 #include <os/log.h>
 #include <xpc/xpc.h>
 
-#define MEMORYSTATUS_CMD_SET_JETSAM_HIGH_WATER_MARK   5    /* Set active memory limit = inactive memory limit, both non-fatal	*/
-#define MEMORYSTATUS_CMD_SET_JETSAM_TASK_LIMIT	      6    /* Set active memory limit = inactive memory limit, both fatal	*/
-
-typedef int (*dlsym_memoryStatus)(uint32_t command, pid_t pid, uint32_t flags, void *buffer, size_t buffersize);
-
 static int updateTaskLimit(uint32_t taskLimitMB, char *requester, pid_t pid) {
-	int response = -1;
-
-	dlsym_memoryStatus memoryStatus;
-	void *handle = dlopen(NULL, 0);
-	memoryStatus = (dlsym_memoryStatus)dlsym(handle, "memorystatus_control");
-	if (memoryStatus) {
-		response = memoryStatus(MEMORYSTATUS_CMD_SET_JETSAM_HIGH_WATER_MARK, pid, taskLimitMB, NULL, 0);
+	// Set high water mark
+	int response = memorystatus_control(MEMORYSTATUS_CMD_SET_JETSAM_HIGH_WATER_MARK, pid, taskLimitMB, NULL, 0);
 		if (response != 0) {
 			os_log_error(OS_LOG_DEFAULT, "Error in setting taskLimit to %u by \"%s\" error: %s", taskLimitMB, requester, strerror(errno));
 		} else {
 			os_log_info(OS_LOG_DEFAULT, "Successfully set taskLimit to %u by \"%s\"", taskLimitMB, requester);
 		}
-	} else {
-		os_log_error(OS_LOG_DEFAULT, "Error in creating dlsym_memoryStatus");
-	}
 
 	return response;
 }
